@@ -8,25 +8,36 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   // Explicit
   //Method
-
+  final formkey = GlobalKey<FormState>();
+  String name, user, password;
   Widget nameText() {
     return TextFormField(
       decoration: InputDecoration(
-          icon: Icon(
-            Icons.face,
-            size: 36.0,
-            color: Colors.orange[300],
-          ),
-          labelText: 'Name :',
-          labelStyle: TextStyle(color: Colors.orange[300]),
-          helperText: 'Type Display Name',
-          helperStyle: TextStyle(color: Colors.black26,
-          fontStyle: FontStyle.italic)),
+        icon: Icon(
+          Icons.face,
+          size: 36.0,
+          color: Colors.orange[300],
+        ),
+        labelText: 'Name :',
+        labelStyle: TextStyle(color: Colors.orange[300]),
+        helperText: 'Type Display Name',
+        helperStyle:
+            TextStyle(color: Colors.black26, fontStyle: FontStyle.italic),
+      ),
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Please Fill Name In Blank';
+        }
+      },onSaved: (String value){
+        name=value;
+
+      },
     );
   }
- Widget userText() {
+
+  Widget userText() {
     return TextFormField(
-      decoration: InputDecoration(
+        decoration: InputDecoration(
           icon: Icon(
             Icons.account_circle,
             size: 36.0,
@@ -35,13 +46,22 @@ class _RegisterState extends State<Register> {
           labelText: 'User :',
           labelStyle: TextStyle(color: Colors.orange[300]),
           helperText: 'Type UserName',
-          helperStyle: TextStyle(color: Colors.black26,
-          fontStyle: FontStyle.italic)),
-    );
+          helperStyle:
+              TextStyle(color: Colors.black26, fontStyle: FontStyle.italic),
+        ),
+        validator: (String value) {
+          if (value.isEmpty) {
+            return 'Please Fill Name In Blank';
+          }
+        },onSaved: (String value){
+        user=value;
+        
+      },);
   }
-   Widget passwordText() {
+
+  Widget passwordText() {
     return TextFormField(
-      decoration: InputDecoration(
+        decoration: InputDecoration(
           icon: Icon(
             Icons.lock,
             size: 36.0,
@@ -50,14 +70,29 @@ class _RegisterState extends State<Register> {
           labelText: 'Password :',
           labelStyle: TextStyle(color: Colors.orange[300]),
           helperText: 'Type Password',
-          helperStyle: TextStyle(color: Colors.black26,
-          fontStyle: FontStyle.italic)),
-    );
+          helperStyle:
+              TextStyle(color: Colors.black26, fontStyle: FontStyle.italic),
+        ),
+        validator: (String value) {
+          if (value.isEmpty) {
+            return 'Please Fill Name In Blank';
+          }
+        },onSaved: (String value){
+        password=value;
+        
+      },);
   }
+
   Widget uploadButton() {
     return IconButton(
       icon: Icon(Icons.cloud_upload),
-      onPressed: () {},
+      onPressed: () {
+        print('Click Upload');
+        if (formkey.currentState.validate()) {
+          formkey.currentState.save();
+          print('name=$name, user = $user, password=$password');
+        }
+      },
     );
   }
 
@@ -74,12 +109,15 @@ class _RegisterState extends State<Register> {
       body: Container(
         alignment: Alignment.topCenter,
         padding: EdgeInsets.only(top: 30.0, left: 30.0, right: 30.0),
-        child: ListView(
-          children: <Widget>[
-            nameText(),
-            userText(),
-            passwordText(),
-          ],
+        child: Form(
+          key: formkey,
+          child: ListView(
+            children: <Widget>[
+              nameText(),
+              userText(),
+              passwordText(),
+            ],
+          ),
         ),
       ),
     );
