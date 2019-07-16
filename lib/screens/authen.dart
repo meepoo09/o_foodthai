@@ -4,6 +4,8 @@ import 'package:o_foodthai/screens/register.dart';
 import 'package:http/http.dart' show get;
 import 'dart:convert';
 
+import 'my_service.dart';
+
 class Authen extends StatefulWidget {
   @override
   _AuthenState createState() => _AuthenState();
@@ -41,17 +43,18 @@ class _AuthenState extends State<Authen> {
       myAlertDialog('User False', 'No $user in my Systems');
     } else {
       print('User true $result');
-  for (var myParseJson in result) {
-     UserModel userModel = UserModel.parseJson(myParseJson);
-     String truePassword = userModel.pass;
-     if (password == truePassword) {
-
-       
-     } else {
-       myAlertDialog('PassWord False', 'Plesase Try Agains Password false');
-     }
-
-  }
+      for (var myParseJson in result) {
+        UserModel userModel = UserModel.parseJson(myParseJson);
+        String truePassword = userModel.pass;
+        if (password == truePassword) {
+          var myServiceRoute =
+              MaterialPageRoute(builder: (BuildContext context) => MyService(userModel: userModel,));
+          Navigator.of(context).pushAndRemoveUntil(
+              myServiceRoute, (Route<dynamic> route) => false);
+        } else {
+          myAlertDialog('PassWord False', 'Plesase Try Agains Password false');
+        }
+      }
     }
   }
 
@@ -60,7 +63,10 @@ class _AuthenState extends State<Authen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(titleString, style: TextStyle(color: Colors.red[300]),),
+          title: Text(
+            titleString,
+            style: TextStyle(color: Colors.red[300]),
+          ),
           content: Text(messageString),
           actions: <Widget>[alertButton()],
         );
