@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:o_foodthai/models/user_model.dart';
 import 'package:o_foodthai/screens/register.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert';
 
 class Authen extends StatefulWidget {
   @override
@@ -8,7 +11,8 @@ class Authen extends StatefulWidget {
 
 class _AuthenState extends State<Authen> {
 //  Explicit
-
+  final formKey = GlobalKey<FormState>();
+  String user, password;
 // medthod
   Widget signInButton() {
     return RaisedButton(
@@ -17,7 +21,59 @@ class _AuthenState extends State<Authen> {
         'Sign In',
         style: TextStyle(color: Colors.white),
       ),
-      onPressed: () {},
+      onPressed: () {
+        if (formKey.currentState.validate()) {
+          formKey.currentState.save();
+          autentication();
+        }
+      },
+    );
+  }
+
+  Future<void> autentication() async {
+    String urlString =
+        'https://www.androidthai.in.th/ooo/getUserWhereUserO.php?isAdd=true&User=$user';
+    var response = await get(urlString);
+    var result = json.decode(response.body);
+
+    if (result.toString() == 'null') {
+      print('User False');
+      myAlertDialog('User False', 'No $user in my Systems');
+    } else {
+      print('User true $result');
+  for (var myParseJson in result) {
+     UserModel userModel = UserModel.parseJson(myParseJson);
+     String truePassword = userModel.pass;
+     if (password == truePassword) {
+
+       
+     } else {
+       myAlertDialog('PassWord False', 'Plesase Try Agains Password false');
+     }
+
+  }
+    }
+  }
+
+  void myAlertDialog(String titleString, String messageString) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(titleString, style: TextStyle(color: Colors.red[300]),),
+          content: Text(messageString),
+          actions: <Widget>[alertButton()],
+        );
+      },
+    );
+  }
+
+  Widget alertButton() {
+    return FlatButton(
+      child: Text('OK'),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
     );
   }
 
@@ -32,7 +88,7 @@ class _AuthenState extends State<Authen> {
         print('you Click Sign Up');
         var regRoute =
             MaterialPageRoute(builder: (BuildContext context) => Register());
-            Navigator.of(context).push(regRoute);
+        Navigator.of(context).push(regRoute);
       },
     );
   }
@@ -63,6 +119,14 @@ class _AuthenState extends State<Authen> {
           labelStyle: TextStyle(color: Colors.orangeAccent),
           hintText: 'Not Blank',
         ),
+        validator: (String value) {
+          if (value.isEmpty) {
+            return 'Please Type User !';
+          }
+        },
+        onSaved: (String value) {
+          user = value;
+        },
       ),
     );
   }
@@ -71,11 +135,20 @@ class _AuthenState extends State<Authen> {
     return Container(
       width: 250.0,
       child: TextFormField(
+        obscureText: true,
         decoration: InputDecoration(
           labelText: 'Password :',
           labelStyle: TextStyle(color: Colors.orangeAccent),
           hintText: 'Not Blank',
         ),
+        validator: (String value) {
+          if (value.isEmpty) {
+            return 'Please Type pass !';
+          }
+        },
+        onSaved: (String value) {
+          password = value;
+        },
       ),
     );
   }
@@ -117,17 +190,19 @@ class _AuthenState extends State<Authen> {
         ),
         padding: EdgeInsets.only(top: 50.0),
         alignment: Alignment.topCenter,
-        child: Column(
-          children: <Widget>[
-            showLogo(),
-            mySizeBox(),
-            showAppName(),
-            userText(),
-            passwordText(),
-            mySizeBox(),
-            showButton(),
-          ],
-        ),
+        child: Form(
+            key: formKey,
+            child: Column(
+              children: <Widget>[
+                showLogo(),
+                mySizeBox(),
+                showAppName(),
+                userText(),
+                passwordText(),
+                mySizeBox(),
+                showButton(),
+              ],
+            )),
       ),
     );
   }
